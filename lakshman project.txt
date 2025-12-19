@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HopeFind | Missing Persons Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .page-container { display: none; min-height: 90vh; }
+        .page-container.active { display: block; animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .glass-header { backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.9); }
+        .card-hover:hover { transform: translateY(-5px); transition: 0.3s; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+    <!-- NAVIGATION -->
+    <nav class="sticky top-0 z-50 glass-header border-b border-gray-200 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="showSection('home-page')">
+                <i class="fas fa-search-location text-blue-600 text-3xl"></i>
+                <h1 class="text-xl font-bold tracking-tight">Hope<span class="text-blue-600">Find</span></h1>
+            </div>
+            <div class="hidden md:flex space-x-8 font-medium">
+                <button onclick="showSection('home-page')" class="hover:text-blue-600 transition">Home</button>
+                <button onclick="showSection('find-page')" class="hover:text-blue-600 transition">Search Database</button>
+                <button onclick="showSection('add-page')" class="hover:text-blue-600 transition">Report Missing</button>
+            </div>
+            <button onclick="toggleModal('login-modal')" class="bg-gray-900 text-white px-5 py-2 rounded-full text-sm hover:bg-gray-800 transition">Volunteer Login</button>
+        </div>
+    </nav>
+
+    <!-- HOME PAGE -->
+    <main id="home-page" class="page-container active">
+        <section class="max-w-7xl mx-auto px-6 py-16 text-center">
+            <h2 class="text-5xl md:text-7xl font-extrabold mb-6">Bring Them <span class="text-blue-600">Home.</span></h2>
+            <p class="text-gray-600 text-lg max-w-2xl mx-auto mb-10">A community-driven platform to share locations, sightings, and information to reunite missing persons with their families.</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <button onclick="showSection('find-page')" class="bg-blue-600 text-white px-8 py-4 rounded-xl font-bold shadow-lg hover:bg-blue-700 transition">Find a Person</button>
+                <button onclick="showSection('add-page')" class="bg-white border-2 border-gray-200 px-8 py-4 rounded-xl font-bold hover:border-blue-600 transition">Report a Case</button>
+            </div>
+        </section>
+
+        <!-- STATS -->
+        <section class="bg-white py-12 border-y border-gray-100">
+            <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-6 text-center">
+                <div><p class="text-4xl font-bold text-blue-600">1,240+</p><p class="text-gray-500">Cases Reported</p></div>
+                <div><p class="text-4xl font-bold text-green-600">850+</p><p class="text-gray-500">Found Safe</p></div>
+                <div><p class="text-4xl font-bold text-purple-600">5,000+</p><p class="text-gray-500">Volunteers</p></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FIND PAGE -->
+    <main id="find-page" class="page-container">
+        <div class="max-w-7xl mx-auto px-6 py-12">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                <h2 class="text-3xl font-bold">Search Database</h2>
+                <input type="text" id="search-bar" onkeyup="searchDatabase()" placeholder="Search by name or city..." class="px-6 py-3 border border-gray-300 rounded-full w-full md:w-96 focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+            
+            <div id="person-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <!-- Data loaded via JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- ADD PERSON PAGE -->
+    <main id="add-page" class="page-container">
+        <div class="max-w-3xl mx-auto px-6 py-12">
+            <div class="bg-white p-8 rounded-3xl shadow-xl border border-gray-100">
+                <h2 class="text-3xl font-bold mb-6">Report Missing Person</h2>
+                <form id="add-person-form" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="fullName" placeholder="Full Name" class="w-full p-3 border border-gray-200 rounded-xl" required>
+                        <input type="number" id="age" placeholder="Age" class="w-full p-3 border border-gray-200 rounded-xl" required>
+                    </div>
+                    <input type="text" id="lastSeen" placeholder="Last Seen Location (City, Area)" class="w-full p-3 border border-gray-200 rounded-xl" required>
+                    <input type="date" id="lastSeenDate" class="w-full p-3 border border-gray-200 rounded-xl" required>
+                    <textarea id="description" placeholder="Physical description, clothing, etc." class="w-full p-3 border border-gray-200 rounded-xl h-32"></textarea>
+                    <input type="url" id="photoUrl" placeholder="Photo URL (Link to image)" class="w-full p-3 border border-gray-200 rounded-xl">
+                    <button type="submit" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition">Submit Report</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- SIGHTING / DETAIL MODAL -->
+    <div id="detail-modal" class="fixed inset-0 bg-black/60 z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl p-8">
+            <div class="flex justify-between items-start mb-6">
+                <h2 id="modal-person-name" class="text-4xl font-extrabold text-gray-800">Person Details</h2>
+                <button onclick="toggleModal('detail-modal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-2xl"></i></button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <img id="modal-image" src="" class="w-full h-80 object-cover rounded-2xl shadow-lg">
+                <div>
+                    <h4 class="font-bold text-blue-600 uppercase text-sm tracking-widest mb-2">Information</h4>
+                    <p id="modal-details" class="text-gray-600 mb-4"></p>
+                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                        <p><strong>Last Seen:</strong> <span id="modal-location"></span></p>
+                        <p><strong>Date:</strong> <span id="modal-date"></span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="my-8">
+            
+            <div>
+                <h3 class="text-2xl font-bold mb-4">Community Sightings & Info</h3>
+                <div id="sightings-list" class="space-y-4 mb-6">
+                    <!-- Sightings loaded here -->
+                </div>
+                
+                <div class="bg-gray-50 p-6 rounded-2xl">
+                    <h4 class="font-bold mb-3">Share a new Sighting</h4>
+                    <div class="flex gap-2">
+                        <input type="text" id="sighting-loc" placeholder="Where did you see them?" class="flex-1 p-3 border border-gray-200 rounded-xl">
+                        <button onclick="addSighting()" class="bg-green-600 text-white px-6 rounded-xl hover:bg-green-700 transition">Share</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN MODAL -->
+    <div id="login-modal" class="fixed inset-0 bg-black/60 z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl p-8 text-center">
+            <i class="fas fa-user-shield text-5xl text-blue-600 mb-4"></i>
+            <h2 class="text-2xl font-bold mb-2">Volunteer Login</h2>
+            <p class="text-gray-500 mb-6">Access secure volunteer features to help catch missing person details.</p>
+            <input type="email" placeholder="Email Address" class="w-full p-3 border border-gray-200 rounded-xl mb-3">
+            <input type="password" placeholder="Password" class="w-full p-3 border border-gray-200 rounded-xl mb-4">
+            <button onclick="toggleModal('login-modal')" class="w-full bg-gray-900 text-white py-3 rounded-xl font-bold">Login</button>
+        </div>
+    </div>
+
+    <script>
+        // INITIAL DATA
+        let missingPersons = JSON.parse(localStorage.getItem('hopeFind_data')) || [
+            {
+                id: 1,
+                name: "Johnathan Smith",
+                age: 28,
+                location: "New York, NY",
+                date: "2023-12-01",
+                description: "Height 6'1, wearing a black jacket and jeans. Last seen near Central Park.",
+                photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
+                sightings: ["Saw a similar person near 5th Ave Subway", "Seen buying water at a deli"]
+            },
+            {
+                id: 2,
+                name: "Sarah Williams",
+                age: 14,
+                location: "Los Angeles, CA",
+                date: "2023-12-05",
+                description: "Blonde hair, blue eyes. Wearing a school uniform (blue skirt).",
+                photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+                sightings: ["Last seen at the Santa Monica Pier"]
+            }
+        ];
+
+        let currentViewedId = null;
+
+        // NAVIGATION LOGIC
+        function showSection(id) {
+            document.querySelectorAll('.page-container').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            window.scrollTo(0, 0);
+            if(id === 'find-page') renderGrid(missingPersons);
+        }
+
+        function toggleModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.toggle('hidden');
+        }
+
+        // RENDER GRID
+        function renderGrid(data) {
+            const grid = document.getElementById('person-grid');
+            grid.innerHTML = data.map(person => `
+                <div class="bg-white rounded-3xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <img src="${person.photo || 'https://via.placeholder.com/400x300?text=No+Photo'}" class="w-full h-56 object-cover">
+                    <div class="p-5">
+                        <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest">Missing</span>
+                        <h3 class="text-xl font-bold mt-2">${person.name}</h3>
+                        <p class="text-gray-500 text-sm"><i class="fas fa-map-marker-alt mr-1"></i> ${person.location}</p>
+                        <button onclick="openDetail(${person.id})" class="mt-4 w-full bg-gray-100 text-gray-800 py-2 rounded-xl font-semibold hover:bg-blue-600 hover:text-white transition">View Info & Sightings</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // SEARCH
+        function searchDatabase() {
+            const val = document.getElementById('search-bar').value.toLowerCase();
+            const filtered = missingPersons.filter(p => 
+                p.name.toLowerCase().includes(val) || p.location.toLowerCase().includes(val)
+            );
+            renderGrid(filtered);
+        }
+
+        // ADD PERSON
+        document.getElementById('add-person-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newPerson = {
+                id: Date.now(),
+                name: document.getElementById('fullName').value,
+                age: document.getElementById('age').value,
+                location: document.getElementById('lastSeen').value,
+                date: document.getElementById('lastSeenDate').value,
+                description: document.getElementById('description').value,
+                photo: document.getElementById('photoUrl').value,
+                sightings: []
+            };
+            missingPersons.unshift(newPerson);
+            localStorage.setItem('hopeFind_data', JSON.stringify(missingPersons));
+            alert("Report Added Successfully!");
+            showSection('find-page');
+            e.target.reset();
+        });
+
+        // DETAIL & SIGHTING LOGIC
+        function openDetail(id) {
+            const person = missingPersons.find(p => p.id === id);
+            currentViewedId = id;
+            document.getElementById('modal-person-name').innerText = person.name + ", " + person.age;
+            document.getElementById('modal-image').src = person.photo || 'https://via.placeholder.com/400x300?text=No+Photo';
+            document.getElementById('modal-details').innerText = person.description;
+            document.getElementById('modal-location').innerText = person.location;
+            document.getElementById('modal-date').innerText = person.date;
+            
+            renderSightings(person.sightings);
+            toggleModal('detail-modal');
+        }
+
+        function renderSightings(sightings) {
+            const container = document.getElementById('sightings-list');
+            if(sightings.length === 0) {
+                container.innerHTML = <p class="text-gray-400 italic">No sightings reported yet. Be the first to share information.</p>;
+            } else {
+                container.innerHTML = sightings.map(s => `
+                    <div class="bg-blue-50 p-4 rounded-xl border-l-4 border-blue-500">
+                        <p class="text-gray-700 font-medium">"${s}"</p>
+                        <p class="text-xs text-blue-400 mt-1 uppercase font-bold">Community Verified</p>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function addSighting() {
+            const input = document.getElementById('sighting-loc');
+            if(!input.value) return;
+            
+            const person = missingPersons.find(p => p.id === currentViewedId);
+            person.sightings.push(input.value);
+            localStorage.setItem('hopeFind_data', JSON.stringify(missingPersons));
+            
+            renderSightings(person.sightings);
+            input.value = "";
+        }
+    </script>
+</body>
+</html>
